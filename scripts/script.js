@@ -26,7 +26,7 @@ $box.click(function(){
 	
 	if(!$this.has('p').length){
 		gameTurn(playerTurn, $this);
-	};	
+	}	
 	
 });
 
@@ -51,15 +51,15 @@ function gameTurn(player, thisBox){
 	  if(isDraw){
 		  gameEnd('draw');
 		  return;
-	  };
+	  }
 	  
 	  if(player === 'x'){
 		  playerTurn = 'o';
 	  }else{
 		  playerTurn = 'x';	
-	  };
+	  }
 
-};
+}
 
 function checkWin(playerClass){
 	
@@ -81,21 +81,19 @@ function checkWin(playerClass){
 		return true;
 	}else{
 		return false;	
-	};
+	}
 
-};
+}
 
 function checkWinCombination(a, b, c, playerClass){
 	
-	if(   a.has(playerClass).length
-	   && b.has(playerClass).length
-	   && c.has(playerClass).length){
-		return true		
+	if(a.has(playerClass).length && b.has(playerClass).length && c.has(playerClass).length){
+		return true;		
 	}else{
-		return false	
+		return false;	
 	}	
 
-};
+}
 
 function checkDraw(){
 	
@@ -106,7 +104,7 @@ function checkDraw(){
 		return false;	
 	}	
 
-};
+}
 
 function gameEnd(playerOrDraw){
 	
@@ -118,9 +116,9 @@ function gameEnd(playerOrDraw){
 	}else{
 		alert('Thanks for playing');
 		$box.off('click');
-	};
+	}
 
-};
+}
 
 function winOrDrawMessage(player){
 
@@ -132,15 +130,4 @@ function winOrDrawMessage(player){
 		return 'It\'s a Draw';	
 	}	
 
-};
- 
-
-
-
-
-
-
-
-
-
-
+}
