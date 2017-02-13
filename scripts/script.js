@@ -1,133 +1,142 @@
 // JavaScript Document
 
-// Game Variables
-var playerTurn = 'x';
-var playerX = '<p class="x">X</p>';
-var playerO = '<p class="o">O</p>';
-var $box = $('.box');
-var $box01 = $('.box_01');
-var $box02 = $('.box_02');
-var $box03 = $('.box_03');
-var $box04 = $('.box_04');
-var $box05 = $('.box_05');
-var $box06 = $('.box_06');
-var $box07 = $('.box_07');
-var $box08 = $('.box_08');
-var $box09 = $('.box_09');
-var isWon = false;
-var isDraw = false;
-var playAnotherGame = false;
-var numberOfSquaresPlayed = 0;
+// Tic Tac Toe - 2 Player
+// ver 1.0
+// Author: Michael Whyte
+//
+// TicTacToe.checkwin() code modified 
+// from code found at:
+//
+// http://aharrisbooks.net/h5g/h5g_13/tictactoe/tttAI.html
+//
+// TicTacToe.checkwin() code based on 
+// lessons learned from the book: 
+// HTML5 Game Development for Dummies
+// by: Andy Harris
+//
+class TicTacToe {
+  
+  constructor(squares){
+    
+    // Game HTML Elements
+    this.squares = squares;
+    
+    // Game State Variables
+    this.currentPlayer = 'X';
+    this.isGameOver = false;
+    this.numberOfPlayedSquares = 0;
+    
+    // Game Board State...
+    // ...basically the game memory...
+    this.gameBoard = [null, null, null, null, null, null, null, null, null];
+    
+    // Store winning combinations
+    this.winCombos = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+    this.winCombosLength = this.winCombos.length;
+    
+  } // end constructor
+  
+  // Game Functions
+  
+  _init(){
+    // clear the squares
+		this.squares.each(function(){
 
-// Click Event Listener 
-$box.click(function(){
-	
-	var $this = $(this);
-	
-	if(!$this.has('p').length){
-		gameTurn(playerTurn, $this);
-	}	
-	
+			$(this).html('');
+
+		});
+    
+    // Reset the game states...
+		this.gameBoard = [null, null, null, null, null, null, null, null, null]; 
+		this.currentPlayer = 'X';
+		this.isGameOver = false;
+		this.numberOfPlayedSquares = 0;
+    
+  } // end init
+  
+  playTurn(el){
+    
+    const index = el.data('index');
+    
+    if(this.isGameOver === true || this.gameBoard[index] !== null){
+      return;
+    }
+    
+    this._updateGameBoard(index, this.currentPlayer, el);
+    this.numberOfPlayedSquares++;
+    const winner = this._checkWin();
+    
+    if(winner === false && this.numberOfPlayedSquares < 9){
+			this.currentPlayer = this.currentPlayer === 'X' ? 'O' : 'X';
+		}else if(this.numberOfPlayedSquares === 9){
+			setTimeout(() => this._endGame('draw'), 100);
+		}else {
+      setTimeout(() => this._endGame(this.currentPlayer), 100);
+    }
+      
+  } // end playTurn
+  
+  _updateGameBoard(index, value, el){
+    
+    this.gameBoard[index] = value;
+		el.html(value);
+    
+  } // end updateGameBoard
+  
+  _checkWin(){
+    
+    let winner = false;
+        
+    for(let combo = 0; combo < this.winCombosLength; combo++){
+      const a = this.winCombos[combo][0];
+      const b = this.winCombos[combo][1];
+      const c = this.winCombos[combo][2];
+
+      if (this.gameBoard[a] === this.gameBoard[b]){
+        if (this.gameBoard[b] === this.gameBoard[c]){
+          if (this.gameBoard[a] !== null){
+            winner = true;
+          } // end if
+        } // end if
+      } // end if
+    } // end for
+
+    return winner;
+    
+  } // end checkWin
+  
+  _endGame(value){
+    
+    	const output = value === 'draw' ? `It's a draw...` : `${value} wins!!!`;
+	  
+	  	alert(output);
+
+		this.isGameOver = true;
+
+		const playAgain = confirm('Click OK to play again...');
+
+		if(playAgain === true){
+			this._init();
+		}
+    
+  } // end endGame
+  
+} // end TicTacToe class
+
+const ticTacToe = new TicTacToe( $('.square') );
+
+ticTacToe.squares.click(function(){
+  ticTacToe.playTurn( $(this) );
 });
 
-// Functions
-function gameTurn(player, thisBox){
-	
-	  if(player === 'x'){
-		  thisBox.append(playerX);
-	  }else{
-		  thisBox.append(playerO);	
-	  }
-	  
-	  isWon = checkWin('.' + player);
-	  
-	  if(isWon){
-		  gameEnd(player);
-		  return;
-	  }else{
-		  isDraw = checkDraw();		
-	  }
-	  
-	  if(isDraw){
-		  gameEnd('draw');
-		  return;
-	  }
-	  
-	  if(player === 'x'){
-		  playerTurn = 'o';
-	  }else{
-		  playerTurn = 'x';	
-	  }
 
-}
 
-function checkWin(playerClass){
-	
-	if(checkWinCombination($box01, $box02, $box03, playerClass)){
-		return true;	
-	}else if(checkWinCombination($box04, $box05, $box06, playerClass)){
-		return true;
-	}else if(checkWinCombination($box07, $box08, $box09, playerClass)){
-		return true;
-	}else if(checkWinCombination($box01, $box04, $box07, playerClass)){
-		return true;
-	}else if(checkWinCombination($box02, $box05, $box08, playerClass)){
-		return true;
-	}else if(checkWinCombination($box03, $box06, $box09, playerClass)){
-		return true;
-	}else if(checkWinCombination($box01, $box05, $box09, playerClass)){
-		return true;
-	}else if(checkWinCombination($box03, $box05, $box07, playerClass)){
-		return true;
-	}else{
-		return false;	
-	}
 
-}
 
-function checkWinCombination(a, b, c, playerClass){
-	
-	if(a.has(playerClass).length && b.has(playerClass).length && c.has(playerClass).length){
-		return true;		
-	}else{
-		return false;	
-	}	
 
-}
 
-function checkDraw(){
-	
-	numberOfSquaresPlayed = $box.children('p').length;
-	if(numberOfSquaresPlayed === 9){
-		return true;	
-	}else{
-		return false;	
-	}	
 
-}
 
-function gameEnd(playerOrDraw){
-	
-	alert(winOrDrawMessage(playerOrDraw));
-	playAnotherGame = confirm('Do you want to play again?');
-	if(playAnotherGame){
-		$box.empty();
-		playerTurn = 'x';
-	}else{
-		alert('Thanks for playing');
-		$box.off('click');
-	}
 
-}
 
-function winOrDrawMessage(player){
 
-	if(player === 'x'){
-		return 'Player 01 Wins';	
-	}else if(player === 'o'){
-		return 'Player 02 Wins';	
-	}else{
-		return 'It\'s a Draw';	
-	}	
-
-}
